@@ -1,0 +1,8 @@
+# Dev-only files — keep the published extension lean.
+.gitignore
+.vscodeignore
+node_modules/**
+tests/**
+images/before-after.*
+**/*.map
+**/.DS_Store
