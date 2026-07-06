@@ -1,0 +1,43 @@
+{
+  "name": "expl3-vscode",
+  "displayName": "expl3 (LaTeX3) Syntax Highlighting",
+  "description": "Syntax highlighting for expl3 (LaTeX3) code — injection grammar for .tex/.sty/.cls/.dtx/.expl.",
+  "version": "0.1.0",
+  "publisher": "CTeX-org",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "latex",
+    "latex3",
+    "expl3",
+    "dtx",
+    "docstrip",
+    "syntax highlighting"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CTeX-org/expl3-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CTeX-org/expl3-vscode/issues"
+  },
+  "homepage": "https://github.com/CTeX-org/expl3-vscode#readme",
+  "contributes": {
+    "grammars": [
+      {
+        "scopeName": "expl3.injection",
+        "path": "./syntaxes/expl3.tmLanguage.json",
+        "injectTo": [
+          "text.tex.latex",
+          "text.tex.doctex",
+          "text.tex.latex-expl3"
+        ]
+      }
+    ]
+  }
+}

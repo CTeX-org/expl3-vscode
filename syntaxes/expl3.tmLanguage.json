@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "expl3.injection",
+  "injectionSelector": "L:text.tex.latex, L:text.tex.doctex, L:text.tex.latex-expl3",
+  "patterns": [
+    { "include": "#docstrip-guard" },
+    { "include": "#expl3-macro" }
+  ],
+  "repository": {
+    "docstrip-guard": {
+      "patterns": [
+        {
+          "comment": "docstrip module guard: %<@@=name>",
+          "match": "(?x) ^ (%) (<) (@@) (=) ([A-Za-z_][A-Za-z0-9_]*) (>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.comment.tex" },
+            "2": { "name": "punctuation.definition.tag.docstrip.expl3" },
+            "3": { "name": "keyword.other.docstrip.at.expl3" },
+            "4": { "name": "punctuation.separator.docstrip.expl3" },
+            "5": { "name": "entity.name.tag.docstrip.module.expl3" },
+            "6": { "name": "punctuation.definition.tag.docstrip.expl3" }
+          }
+        },
+        {
+          "comment": "docstrip open/close/single guard: %<*tag>, %</tag>, %<+tag>, %<!tag>, %<tag>",
+          "match": "(?x) ^ (%) (<) ([*/+!-]?) ([A-Za-z_][A-Za-z0-9_|&!,+-]*) (>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.comment.tex" },
+            "2": { "name": "punctuation.definition.tag.docstrip.expl3" },
+            "3": { "name": "keyword.operator.docstrip.marker.expl3" },
+            "4": { "name": "entity.name.tag.docstrip.expl3" },
+            "5": { "name": "punctuation.definition.tag.docstrip.expl3" }
+          }
+        }
+      ]
+    },
+    "expl3-macro": {
+      "patterns": [
+        { "include": "#expl3-quark-scan-const" },
+        { "include": "#expl3-private-at-at" },
+        { "include": "#expl3-api-family" },
+        { "include": "#expl3-variable-prefix" }
+      ]
+    },
+    "expl3-quark-scan-const": {
+      "comment": "Quarks, scan marks and well-known constants: \\q_stop, \\s_stop, \\c_true_bool, \\c_space_tl, ...",
+      "match": "(?x) \\\\ (?: q | s ) _ [A-Za-z_][A-Za-z0-9_]* \\b | \\\\ c _ (?: true_bool | false_bool | space_tl | space_str | empty_tl | empty_clist | empty_seq | empty_prop | empty_intarray | empty_iow | empty_ior | novalue_tl | tilde_str | zero (?:_[a-z]+)? | one (?:_[a-z]+)? | inf (?:_[a-z]+)? | pi_fp | e_fp | max_dim | max_int | max_register_int | minus_one (?:_[a-z]+)? | tokens_(?:default|off|on)_tl | undefined ) \\b",
+      "name": "constant.language.expl3"
+    },
+    "expl3-private-at-at": {
+      "comment": "Module-private commands under %<@@=xxx> guard: \\@@_something:Nn, \\@@_state_bool, \\@@_",
+      "match": "(?x) \\\\ @@ _ [A-Za-z0-9_]* (?: : [a-zA-Z]+ )?",
+      "name": "entity.name.function.private.expl3"
+    },
+    "expl3-api-family": {
+      "comment": "expl3 public API families: \\<family>_<name>:<sig> — tl/clist/seq/prop/int/dim/skip/muskip/bool/regex/str/token/cs/use/exp/iow/ior/group/mode/char/code/prg/msg/fp/coffin/scan/box/hbox/vbox/keys/color/file/legacy/pdf/sort/tex/hook/mark/lua",
+      "match": "(?x) \\\\ (?: tl | clist | seq | prop | int | intarray | fparray | dim | skip | muskip | bool | regex | str | token | cs | use | exp | iow | ior | group | mode | char | code | prg | msg | fp | coffin | scan | box | hbox | vbox | keys | color | file | legacy | pdf | sort | tex | hook | mark | lua ) _ [A-Za-z0-9_]+ (?: : [a-zA-Z]+ )?",
+      "name": "support.function.expl3"
+    },
+    "expl3-variable-prefix": {
+      "comment": "expl3 variable naming: \\<l|g|c>_[NAME]_<type>, e.g. \\l_@@_tmp_tl, \\g__ctex_state_bool, \\c_@@_marker_tl",
+      "match": "(?x) \\\\ [lgc] _ [_A-Za-z@][A-Za-z0-9_@]* (?: : [a-zA-Z]+ )?",
+      "name": "variable.other.expl3"
+    }
+  }
+}
