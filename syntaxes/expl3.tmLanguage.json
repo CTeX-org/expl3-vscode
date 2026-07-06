@@ -22,8 +22,8 @@
           }
         },
         {
-          "comment": "docstrip open/close/single guard: %<*tag>, %</tag>, %<+tag>, %<!tag>, %<tag>",
-          "match": "(?x) ^ (%) (<) ([*/+!-]?) ([A-Za-z_][A-Za-z0-9_|&!,+-]*) (>)",
+          "comment": "docstrip block/inline guard: %<*expr>, %</expr>, %<+expr>, %<expr>. The optional *,/,+,- marker selects the block direction; expr is a docstrip boolean expression that may itself start with ! (negation) or ( and use |, &, ! operators, e.g. %<*!driver>, %<*fd|zhmap>, %<*a&!b>.",
+          "match": "(?x) ^ (%) (<) ([*/+-]?) ([A-Za-z_!(][A-Za-z0-9_|&!,+()-]*) (>)",
           "captures": {
             "1": { "name": "punctuation.definition.comment.tex" },
             "2": { "name": "punctuation.definition.tag.docstrip.expl3" },

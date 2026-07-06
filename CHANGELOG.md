@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2] - 2026-07-06
+
+### Fixed
+
+- docstrip guards with a negated expression — `%<*!driver>`, `%</!spa>`,
+  `%<+!driver>` — were not highlighted. The marker (`*`/`/`/`+`/`-`) and the
+  boolean expression (which may start with `!` or `(`) are now matched
+  separately, so all docstrip forms highlight correctly.
+
 ## [0.2.1] - 2026-07-06
 
 ### Added
