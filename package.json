@@ -94,11 +94,11 @@
           ],
           "enumDescriptions": [
             "Run explcheck when a file is opened or saved.",
-            "Run explcheck as you type (debounced), plus on open/save.",
+            "Run explcheck live as you type (debounced), plus on open/save.",
             "Only run explcheck via the 'expl3: Run explcheck' command."
           ],
           "default": "onSave",
-          "description": "When to run explcheck diagnostics."
+          "description": "When to run explcheck diagnostics. Use 'onType' for live as-you-type checking."
         },
         "expl3.check.debounce": {
           "type": "number",

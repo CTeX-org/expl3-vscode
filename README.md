@@ -58,6 +58,18 @@ keeps working regardless.
 
 Command **expl3: Run explcheck on the active file** triggers a check on demand.
 
+#### Live (as-you-type) checking
+
+By default checks run on save (`onSave`). To lint **as you type**, set:
+
+```json
+"expl3.check.run": "onType"
+```
+
+Checks are debounced (`expl3.check.debounce`, 400 ms) and a typical file lints
+in ~0.1 s, so this stays responsive. The trade-off is transient warnings while a
+line is half-written — `onSave` avoids that by only checking at save points.
+
 ## Requirements
 
 This is an **injection grammar**: it layers on top of an existing LaTeX grammar rather
