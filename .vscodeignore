@@ -1,8 +1,13 @@
 # Dev-only files — keep the published extension lean.
 .gitignore
 .vscodeignore
+.github/**
 node_modules/**
+src/**
 tests/**
 images/before-after.*
+tsconfig.json
+package-lock.json
+**/*.ts
 **/*.map
 **/.DS_Store

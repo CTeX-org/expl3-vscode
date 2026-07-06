@@ -1,7 +1,7 @@
 {
   "name": "expl3-vscode",
-  "displayName": "expl3 (LaTeX3) Syntax Highlighting",
-  "description": "Syntax highlighting for expl3 (LaTeX3) code — injection grammar for .tex/.sty/.cls/.dtx/.expl.",
+  "displayName": "expl3 (LaTeX3) Language Support",
+  "description": "Syntax highlighting and explcheck diagnostics for expl3 (LaTeX3) code.",
   "version": "0.1.0",
   "publisher": "CTeX-org",
   "license": "MIT",
@@ -14,7 +14,8 @@
     "vscode": "^1.75.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Linters"
   ],
   "keywords": [
     "latex",
@@ -22,6 +23,8 @@
     "expl3",
     "dtx",
     "docstrip",
+    "explcheck",
+    "linter",
     "syntax highlighting"
   ],
   "repository": {
@@ -32,6 +35,24 @@
     "url": "https://github.com/CTeX-org/expl3-vscode/issues"
   },
   "homepage": "https://github.com/CTeX-org/expl3-vscode#readme",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:latex",
+    "onLanguage:latex-expl3",
+    "onLanguage:tex",
+    "onLanguage:expl3"
+  ],
+  "scripts": {
+    "compile": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "npm run compile -- --sourcemap --watch",
+    "vscode:prepublish": "npm run compile -- --minify"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.4.0"
+  },
   "contributes": {
     "grammars": [
       {
@@ -43,6 +64,66 @@
           "text.tex.latex-expl3"
         ]
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "expl3.check.run",
+        "title": "expl3: Run explcheck on the active file"
+      }
+    ],
+    "configuration": {
+      "title": "expl3",
+      "properties": {
+        "expl3.check.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable explcheck static analysis diagnostics."
+        },
+        "expl3.check.path": {
+          "type": "string",
+          "default": "explcheck",
+          "description": "Path to the explcheck executable. Defaults to `explcheck` on PATH (provided by the TeX Live `expltools` package)."
+        },
+        "expl3.check.run": {
+          "type": "string",
+          "enum": [
+            "onSave",
+            "onType",
+            "manual"
+          ],
+          "enumDescriptions": [
+            "Run explcheck when a file is opened or saved.",
+            "Run explcheck as you type (debounced), plus on open/save.",
+            "Only run explcheck via the 'expl3: Run explcheck' command."
+          ],
+          "default": "onSave",
+          "description": "When to run explcheck diagnostics."
+        },
+        "expl3.check.debounce": {
+          "type": "number",
+          "default": 400,
+          "minimum": 100,
+          "description": "Debounce delay in milliseconds for `onType` checking."
+        },
+        "expl3.check.maxLineLength": {
+          "type": "number",
+          "default": 0,
+          "description": "Max line length before the S103 (line too long) warning. 0 uses explcheck's default (80)."
+        },
+        "expl3.check.ignoredIssues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Issue identifiers or prefixes to suppress (passed to explcheck --ignored-issues), e.g. [\"s103\", \"w2\"]."
+        },
+        "expl3.check.makeAtLetter": {
+          "type": "boolean",
+          "default": false,
+          "description": "Tokenize @ as a letter (catcode 11), like in LaTeX .sty files (explcheck --make-at-letter)."
+        }
+      }
+    }
   }
 }

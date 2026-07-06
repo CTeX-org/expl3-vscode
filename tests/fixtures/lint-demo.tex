@@ -1,0 +1,9 @@
+\ExplSyntaxOn
+% w415: unused variable
+\tl_new:N \l__demo_unused_tl
+% s103 would need >80 cols; here trigger w401 unused private function
+\cs_new:Npn \__demo_never_called:n #1 { #1 }
+% valid usage
+\cs_new:Npn \__demo_main:n #1
+  { \tl_set:Nn \l_tmpa_tl {#1} }
+\ExplSyntaxOff
