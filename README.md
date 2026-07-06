@@ -61,6 +61,24 @@ configuration needed.
 Install **LaTeX Workshop** and **expl3 Syntax Highlighting** from the Extensions view
 (<kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>), then reload the window.
 
+## Releasing (maintainers)
+
+Releases are tag-driven (`.github/workflows/release.yml`):
+
+- `vX.Y.Z-rcM` → build + **GitHub prerelease** (public beta). No marketplace.
+- `vX.Y.Z` → build + **GitHub release**, then a **gated** publish to the
+  VS Code Marketplace and Open VSX.
+
+The publish step runs under the `release` GitHub Environment, which has a
+**Required reviewer**: the publish job pauses until that reviewer approves, so
+even though anyone in the org can push a tag, only the reviewer can push a
+release to the marketplaces. Credentials (`VSCE_PAT`, `OVSX_PAT`) are stored as
+**environment secrets** on `release`, readable only by the approved publish job.
+
+To cut a release: bump `version` in `package.json`, commit, then
+`git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow's version gate refuses
+to run if the tag's base version does not match `package.json`.
+
 ## Contributing
 
 Grammar lives in [`syntaxes/expl3.tmLanguage.json`](syntaxes/expl3.tmLanguage.json);
