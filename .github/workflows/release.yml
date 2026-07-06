@@ -1,0 +1,106 @@
+name: Release
+
+# Tag-driven release, mirroring the ctex-kit philosophy:
+#   vX.Y.Z-rcM  -> build + GitHub prerelease (public beta). No marketplace.
+#   vX.Y.Z      -> build + GitHub release + publish to VS Code Marketplace + Open VSX.
+#
+# One-time setup: add repository secrets
+#   VSCE_PAT  — Azure DevOps PAT with Marketplace:Manage scope
+#   OVSX_PAT  — open-vsx.org access token
+# Publishing steps are skipped gracefully if the matching secret is absent.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Parse tag
+        id: tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"          # e.g. v0.1.0 or v0.1.0-rc2
+          VER="${TAG#v}"                    # strip leading v
+          BASE="$(printf '%s' "$VER" | sed -E 's/-(rc|pre|alpha|beta)[0-9]*$//')"
+          if [ "$VER" != "$BASE" ]; then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
+          {
+            echo "version=$VER"
+            echo "base=$BASE"
+            echo "prerelease=$PRERELEASE"
+          } >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG  version=$VER  base=$BASE  prerelease=$PRERELEASE"
+
+      - name: Verify package.json version matches tag base
+        run: |
+          PKG_VER="$(node -p "require('./package.json').version")"
+          BASE="${{ steps.tag.outputs.base }}"
+          if [ "$PKG_VER" != "$BASE" ]; then
+            echo "::error::tag ${{ steps.tag.outputs.version }} (base $BASE) != package.json version $PKG_VER. Bump package.json before tagging."
+            exit 1
+          fi
+          echo "version check ok: $PKG_VER"
+
+      - name: Install tooling
+        run: npm install --no-save @vscode/vsce ovsx
+
+      - name: Package VSIX
+        id: pack
+        run: |
+          OUT="expl3-vscode-${{ steps.tag.outputs.version }}.vsix"
+          npx vsce package --no-yarn -o "$OUT"
+          echo "vsix=$OUT" >> "$GITHUB_OUTPUT"
+          ls -la "$OUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          FLAGS=()
+          if [ "${{ steps.tag.outputs.prerelease }}" = "true" ]; then
+            FLAGS+=(--prerelease --title "expl3-vscode ${{ steps.tag.outputs.version }} (prerelease)")
+          else
+            FLAGS+=(--latest --title "expl3-vscode ${{ steps.tag.outputs.version }}")
+          fi
+          gh release create "${GITHUB_REF_NAME}" \
+            "${{ steps.pack.outputs.vsix }}" \
+            --generate-notes \
+            "${FLAGS[@]}" \
+          || gh release upload "${GITHUB_REF_NAME}" "${{ steps.pack.outputs.vsix }}" --clobber
+
+      - name: Publish to VS Code Marketplace
+        if: steps.tag.outputs.prerelease == 'false'
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "::warning::VSCE_PAT not set — skipping VS Code Marketplace publish."
+            exit 0
+          fi
+          npx vsce publish --no-yarn --packagePath "${{ steps.pack.outputs.vsix }}" -p "$VSCE_PAT"
+
+      - name: Publish to Open VSX
+        if: steps.tag.outputs.prerelease == 'false'
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::warning::OVSX_PAT not set — skipping Open VSX publish."
+            exit 0
+          fi
+          npx ovsx create-namespace CTeX-org -p "$OVSX_PAT" || true
+          npx ovsx publish "${{ steps.pack.outputs.vsix }}" -p "$OVSX_PAT"

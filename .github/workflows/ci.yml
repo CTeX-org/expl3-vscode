@@ -1,0 +1,29 @@
+name: CI
+
+# Cheap insurance: on every push / PR, make sure the grammar is valid JSON
+# and the extension still packages. Catches breakage before a release tag.
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate grammar JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('syntaxes/expl3.tmLanguage.json','utf8')); console.log('grammar JSON ok')"
+
+      - name: Package (dry run)
+        run: |
+          npm install --no-save @vscode/vsce
+          npx vsce package --no-yarn -o /tmp/expl3-vscode-ci.vsix
+          npx vsce ls
