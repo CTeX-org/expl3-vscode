@@ -2,7 +2,7 @@
   "name": "expl3-vscode",
   "displayName": "expl3 (LaTeX3) Language Support",
   "description": "Syntax highlighting and explcheck diagnostics for expl3 (LaTeX3) code.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "CTeX-org",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -50,6 +50,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.4.0"
   },

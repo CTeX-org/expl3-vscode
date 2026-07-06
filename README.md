@@ -1,10 +1,13 @@
-# expl3 (LaTeX3) Syntax Highlighting
+# expl3 (LaTeX3) Language Support
 
-Syntax highlighting for **expl3** (the LaTeX3 programming layer) in Visual Studio Code.
+Syntax highlighting **and** static-analysis diagnostics for **expl3** (the
+LaTeX3 programming layer) in Visual Studio Code.
 
-Files full of expl3 code — `xeCJK.dtx`, `expl3.dtx`, your own `.sty`/`.cls` — normally
-render as a wall of undifferentiated `\command` text. This extension adds a semantic
-layer on top so the pieces that actually carry meaning stand out.
+Files full of expl3 code — `xeCJK.dtx`, `expl3.dtx`, your own `.sty`/`.cls` —
+normally render as a wall of undifferentiated `\command` text. This extension
+adds a semantic highlighting layer so the pieces that carry meaning stand out,
+and surfaces [`explcheck`](https://ctan.org/pkg/expltools) lint results directly
+in the editor.
 
 ![expl3 highlighting before / after](https://raw.githubusercontent.com/CTeX-org/expl3-vscode/main/images/before-after.png)
 
@@ -20,6 +23,40 @@ layer on top so the pieces that actually carry meaning stand out.
 
 Colors come from your active color theme — the extension only assigns scopes, so it
 looks native in Dark+, Light+, Solarized, and everything else.
+
+## Diagnostics (explcheck)
+
+If [`explcheck`](https://ctan.org/pkg/expltools) is available, the extension runs it
+on your expl3 files and shows the results as squiggles, mapped by severity:
+
+| explcheck prefix | meaning | VS Code severity |
+|------------------|---------|------------------|
+| `e`, `t` | errors / type errors | Error |
+| `w` | warnings | Warning |
+| `s` | style warnings | Information |
+
+`explcheck` ships with TeX Live's `expltools` package (`tlmgr install expltools`). If
+it is not found, the extension prompts once and stays quiet otherwise — highlighting
+keeps working regardless.
+
+> **`.dtx` / `.ins` are not linted.** `explcheck` cannot process bundled sources
+> directly yet (see [explcheck issue #20](https://github.com/witiko/expltools/issues/20),
+> planned for v1.1); unpack them to `.sty`/`.tex` first. Highlighting still applies to
+> `.dtx`.
+
+### Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `expl3.check.enable` | `true` | Enable explcheck diagnostics. |
+| `expl3.check.path` | `explcheck` | Path to the executable. |
+| `expl3.check.run` | `onSave` | `onSave`, `onType` (debounced), or `manual`. |
+| `expl3.check.debounce` | `400` | Debounce (ms) for `onType`. |
+| `expl3.check.maxLineLength` | `0` | Max line length before S103 (0 = explcheck default 80). |
+| `expl3.check.ignoredIssues` | `[]` | Issue ids/prefixes to suppress, e.g. `["s103"]`. |
+| `expl3.check.makeAtLetter` | `false` | Tokenize `@` as a letter (like `.sty` files). |
+
+Command **expl3: Run explcheck on the active file** triggers a check on demand.
 
 ## Requirements
 

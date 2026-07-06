@@ -20,8 +20,14 @@ jobs:
       - name: Validate grammar JSON
         run: node -e "JSON.parse(require('fs').readFileSync('syntaxes/expl3.tmLanguage.json','utf8')); console.log('grammar JSON ok')"
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Compile
+        run: npm run compile
+
       - name: Package (dry run)
-        run: |
-          npm install --no-save @vscode/vsce
-          npx vsce package --no-yarn -o /tmp/expl3-vscode-ci.vsix
-          npx vsce ls
+        run: npx vsce package --no-yarn -o /tmp/expl3-vscode-ci.vsix
