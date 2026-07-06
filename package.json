@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "publisher": "CTeX-org",
   "license": "MIT",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1E2A45",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },

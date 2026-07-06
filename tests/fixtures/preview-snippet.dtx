@@ -1,0 +1,22 @@
+%<@@=xeCJK>
+%<*package>
+\tl_new:N   \g_@@_last_node_tl
+\bool_new:N \l_@@_latin_punct_bool
+\tl_const:Nn \c_@@_marker_tl { \tex_kern:D 0 pt }
+
+\cs_new_protected:Npn \@@_patch_meta:
+  {
+    \cs_if_exist:NTF \__codedoc_meta:n
+      { \cs_set_eq:NN \@@_orig_meta:n \__codedoc_meta:n }
+      { \tl_gclear:N \g_@@_last_node_tl }
+  }
+
+\int_compare:nNnTF { \l_@@_begin_int } < { 3 }
+  { \prop_gput:Nnn \g_@@_metric_prop {##1} { 0 pt } }
+  { \use_none_delimit_by_q_stop:w \q_stop }
+
+\bool_if:NTF \c_true_bool { \iow_term:n { ok } } { }
+%</package>
+%<*driver>
+\documentclass{l3doc}
+%</driver>
