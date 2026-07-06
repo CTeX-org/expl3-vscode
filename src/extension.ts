@@ -35,6 +35,27 @@ function severityOf(t: string): vscode.DiagnosticSeverity {
   }
 }
 
+// explcheck has no per-rule HTML page (docs are PDF + pandoc markdown, and
+// GitHub does not honour the pandoc {label=...} anchors). The best stable link
+// is the phase-specific markdown source, chosen by the rule's leading digit.
+// Users land on the right document and can search for the code. Falls back to
+// the intro for anything unrecognised.
+const DOC_BASE =
+  "https://github.com/witiko/expltools/blob/main/explcheck/doc/";
+const PHASE_DOC: Record<string, string> = {
+  "1": "warnings-and-errors-01-preprocessing.md",
+  "2": "warnings-and-errors-02-lexical-analysis.md",
+  "3": "warnings-and-errors-03-syntactic-analysis.md",
+  "4": "warnings-and-errors-04-semantic-analysis.md",
+  "5": "warnings-and-errors-05-flow-analysis.md",
+};
+function ruleDocUri(code: string): vscode.Uri {
+  const digit = code.replace(/^[a-z]/i, "").charAt(0);
+  const file = PHASE_DOC[digit] ?? "warnings-and-errors-00-introduction.md";
+  return vscode.Uri.parse(DOC_BASE + file);
+}
+
+
 function config() {
   return vscode.workspace.getConfiguration("expl3");
 }
@@ -45,6 +66,15 @@ function isEnabled(): boolean {
 
 function explcheckPath(): string {
   return config().get<string>("check.path", "explcheck") || "explcheck";
+}
+
+// explcheck looks for `.explcheckrc` in its cwd only (no upward search).
+// Run it from the workspace root so a project-level config is picked up
+// regardless of where the checked file sits. Falls back to the file's dir.
+function execCwd(docUri: vscode.Uri): string {
+  const folder = vscode.workspace.getWorkspaceFolder(docUri);
+  if (folder) return folder.uri.fsPath;
+  return path.dirname(docUri.fsPath);
 }
 
 // Should we lint this document? Skip .dtx by extension even if the language id
@@ -83,7 +113,7 @@ function runExplcheck(
   cp.execFile(
     exe,
     buildArgs(target),
-    { maxBuffer: 8 * 1024 * 1024 },
+    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri) },
     (err, stdout, stderr) => {
       // ENOENT => explcheck not installed / not on PATH.
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {
@@ -120,7 +150,8 @@ function parseOutput(stdout: string, target: string): vscode.Diagnostic[] {
       severityOf(m.groups.t),
     );
     diag.source = "explcheck";
-    diag.code = code;
+    // Clickable code that links to the rule's documentation.
+    diag.code = { value: code, target: ruleDocUri(code) };
     diags.push(diag);
   }
   return diags;
@@ -161,7 +192,7 @@ function runExplcheckTemp(
   cp.execFile(
     exe,
     buildArgs(tmp),
-    { maxBuffer: 8 * 1024 * 1024 },
+    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri) },
     (err, stdout) => {
       fs.unlink(tmp, () => {});
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {

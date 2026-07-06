@@ -2,7 +2,7 @@
   "name": "expl3-vscode",
   "displayName": "expl3 (LaTeX3) Language Support",
   "description": "Syntax highlighting and explcheck diagnostics for expl3 (LaTeX3) code.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "CTeX-org",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -36,6 +36,9 @@
   },
   "homepage": "https://github.com/CTeX-org/expl3-vscode#readme",
   "main": "./dist/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
   "activationEvents": [
     "onLanguage:latex",
     "onLanguage:latex-expl3",
@@ -78,12 +81,12 @@
         "expl3.check.enable": {
           "type": "boolean",
           "default": true,
-          "description": "Enable explcheck static analysis diagnostics."
+          "markdownDescription": "Enable [`explcheck`](https://ctan.org/pkg/expltools) static-analysis diagnostics."
         },
         "expl3.check.path": {
           "type": "string",
           "default": "explcheck",
-          "description": "Path to the explcheck executable. Defaults to `explcheck` on PATH (provided by the TeX Live `expltools` package)."
+          "markdownDescription": "Path to the `explcheck` executable. Defaults to `explcheck` on `PATH` (provided by the TeX Live [`expltools`](https://ctan.org/pkg/expltools) package)."
         },
         "expl3.check.run": {
           "type": "string",
@@ -98,18 +101,18 @@
             "Only run explcheck via the 'expl3: Run explcheck' command."
           ],
           "default": "onSave",
-          "description": "When to run explcheck diagnostics. Use 'onType' for live as-you-type checking."
+          "markdownDescription": "When to run explcheck diagnostics. Use `onType` for live as-you-type checking."
         },
         "expl3.check.debounce": {
           "type": "number",
           "default": 400,
           "minimum": 100,
-          "description": "Debounce delay in milliseconds for `onType` checking."
+          "markdownDescription": "Debounce delay in milliseconds for `onType` checking."
         },
         "expl3.check.maxLineLength": {
           "type": "number",
           "default": 0,
-          "description": "Max line length before the S103 (line too long) warning. 0 uses explcheck's default (80)."
+          "markdownDescription": "Max line length before the `s103` (line too long) warning. `0` uses explcheck's default (80)."
         },
         "expl3.check.ignoredIssues": {
           "type": "array",
@@ -117,12 +120,12 @@
             "type": "string"
           },
           "default": [],
-          "description": "Issue identifiers or prefixes to suppress (passed to explcheck --ignored-issues), e.g. [\"s103\", \"w2\"]."
+          "markdownDescription": "Issue identifiers or prefixes to suppress (passed to `explcheck --ignored-issues`), e.g. `[\"s103\", \"w2\"]`."
         },
         "expl3.check.makeAtLetter": {
           "type": "boolean",
           "default": false,
-          "description": "Tokenize @ as a letter (catcode 11), like in LaTeX .sty files (explcheck --make-at-letter)."
+          "markdownDescription": "Tokenize `@` as a letter (catcode 11), like in LaTeX `.sty` files (`explcheck --make-at-letter`)."
         }
       }
     }

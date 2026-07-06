@@ -29,6 +29,8 @@ looks native in Dark+, Light+, Solarized, and everything else.
 If [`explcheck`](https://ctan.org/pkg/expltools) is available, the extension runs it
 on your expl3 files and shows the results as squiggles, mapped by severity:
 
+![explcheck diagnostics](https://raw.githubusercontent.com/CTeX-org/expl3-vscode/main/images/diagnostics.png)
+
 | explcheck prefix | meaning | VS Code severity |
 |------------------|---------|------------------|
 | `e`, `t` | errors / type errors | Error |
@@ -57,6 +59,10 @@ keeps working regardless.
 | `expl3.check.makeAtLetter` | `false` | Tokenize `@` as a letter (like `.sty` files). |
 
 Command **expl3: Run explcheck on the active file** triggers a check on demand.
+
+Project-level [`.explcheckrc`](https://ctan.org/pkg/expltools) config is respected:
+checks run from the workspace root, so a `.explcheckrc` at the project root applies
+even to files in subdirectories.
 
 #### Live (as-you-type) checking
 

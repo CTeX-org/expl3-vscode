@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.1] - 2026-07-06
+
+### Added
+
+- Diagnostic codes are now clickable and link to the relevant `explcheck`
+  documentation (the phase-specific rule reference).
+- `.explcheckrc` project config is respected: checks run from the workspace
+  root, so a root-level config applies to files in subdirectories.
+
+### Changed
+
+- Declared `extensionKind: ["workspace"]` so diagnostics work correctly in
+  Remote-SSH / Dev Containers (explcheck runs on the workspace side).
+- Settings use `markdownDescription` for richer links and formatting.
+- README gains a diagnostics screenshot and an as-you-type / `.explcheckrc` note.
+
 ## [0.2.0] - 2026-07-06
 
 ### Added
