@@ -1,5 +1,10 @@
 # expl3 (LaTeX3) Language Support
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/CTeX-org.expl3-vscode?label=VS%20Code%20Marketplace&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=CTeX-org.expl3-vscode)
+[![Open VSX](https://img.shields.io/open-vsx/v/CTeX-org/expl3-vscode?label=Open%20VSX)](https://open-vsx.org/extension/CTeX-org/expl3-vscode)
+[![CI](https://github.com/CTeX-org/expl3-vscode/actions/workflows/ci.yml/badge.svg)](https://github.com/CTeX-org/expl3-vscode/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Syntax highlighting **and** static-analysis diagnostics for **expl3** (the
 LaTeX3 programming layer) in Visual Studio Code.
 

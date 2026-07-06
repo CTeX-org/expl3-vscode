@@ -29,5 +29,8 @@ jobs:
       - name: Compile
         run: npm run compile
 
+      - name: Grammar regression test
+        run: npm test
+
       - name: Package (dry run)
         run: npx vsce package --no-yarn -o /tmp/expl3-vscode-ci.vsix

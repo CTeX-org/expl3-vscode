@@ -2,7 +2,7 @@
   "name": "expl3-vscode",
   "displayName": "expl3 (LaTeX3) Language Support",
   "description": "Syntax highlighting and explcheck diagnostics for expl3 (LaTeX3) code.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "CTeX-org",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -48,6 +48,7 @@
   "scripts": {
     "compile": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "watch": "npm run compile -- --sourcemap --watch",
+    "test": "node tests/grammar.test.mjs",
     "vscode:prepublish": "npm run compile -- --minify"
   },
   "devDependencies": {
@@ -55,17 +56,38 @@
     "@types/vscode": "^1.75.0",
     "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.25.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vscode-oniguruma": "^2.0.0",
+    "vscode-textmate": "^9.0.0"
   },
   "contributes": {
+    "languages": [
+      {
+        "id": "expl3",
+        "aliases": [
+          "expl3",
+          "LaTeX3"
+        ],
+        "extensions": [
+          ".expl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
     "grammars": [
+      {
+        "language": "expl3",
+        "scopeName": "source.expl3",
+        "path": "./syntaxes/expl3-base.tmLanguage.json"
+      },
       {
         "scopeName": "expl3.injection",
         "path": "./syntaxes/expl3.tmLanguage.json",
         "injectTo": [
           "text.tex.latex",
           "text.tex.doctex",
-          "text.tex.latex-expl3"
+          "text.tex.latex-expl3",
+          "source.expl3"
         ]
       }
     ],

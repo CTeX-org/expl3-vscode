@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.3] - 2026-07-06
+
+### Added
+
+- Bare `.expl` files are now highlighted: the extension registers an `expl3`
+  language and a base grammar, giving the injection a host scope. Previously
+  `.expl` files got no highlighting (they had no LaTeX host grammar).
+- CI now runs a grammar regression test (`tests/grammar.test.mjs`) that
+  tokenizes fixtures and asserts the expected scopes, including the negated
+  docstrip forms fixed in 0.2.2.
+- README badges and a bug-report issue template.
+
 ## [0.2.2] - 2026-07-06
 
 ### Fixed

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "expl3",
+  "scopeName": "source.expl3",
+  "comment": "Minimal base grammar so bare .expl files get a text.tex.* host for the expl3 injection to attach to. Provides only fundamental TeX tokens; the expl3.injection grammar adds the expl3-specific coloring on top.",
+  "patterns": [
+    {
+      "name": "comment.line.percentage.tex",
+      "match": "%.*$",
+      "captures": {
+        "0": { "name": "comment.line.percentage.tex" }
+      }
+    },
+    {
+      "name": "constant.character.escape.tex",
+      "match": "\\\\[A-Za-z@_:]+"
+    },
+    {
+      "name": "constant.character.escape.tex",
+      "match": "\\\\."
+    },
+    {
+      "name": "punctuation.definition.group.tex",
+      "match": "[{}]"
+    }
+  ],
+  "repository": {}
+}
