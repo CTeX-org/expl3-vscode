@@ -13,6 +13,11 @@ const LINE_RE =
 
 const ERROR_FORMAT = "%f:%l:%c:%e:%k: %t%n %M";
 
+// Cap explcheck runtime so a hung/pathological run cannot block forever or leak
+// a temp file. On timeout execFile sends SIGTERM and still fires the callback,
+// so the dirty-buffer temp file is unlinked in the normal cleanup path.
+const EXEC_TIMEOUT_MS = 30_000;
+
 // Language ids we lint. .dtx is intentionally excluded: explcheck cannot yet
 // process .dtx directly (see explcheck issue #20, planned for v1.1).
 const LINTABLE_LANGS = new Set([
@@ -64,6 +69,13 @@ function isEnabled(): boolean {
   return config().get<boolean>("check.enable", true);
 }
 
+// When explcheck runs automatically: "onSave" (open + save), "onType" (adds
+// debounced live checking), or "manual" (command only). Open/save auto-linting
+// is suppressed in "manual" mode.
+function runMode(): string {
+  return config().get<string>("check.run", "onSave");
+}
+
 function explcheckPath(): string {
   return config().get<string>("check.path", "explcheck") || "explcheck";
 }
@@ -113,7 +125,7 @@ function runExplcheck(
   cp.execFile(
     exe,
     buildArgs(target),
-    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri) },
+    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri), timeout: EXEC_TIMEOUT_MS },
     (err, stdout, stderr) => {
       // ENOENT => explcheck not installed / not on PATH.
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {
@@ -192,7 +204,7 @@ function runExplcheckTemp(
   cp.execFile(
     exe,
     buildArgs(tmp),
-    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri) },
+    { maxBuffer: 8 * 1024 * 1024, cwd: execCwd(docUri), timeout: EXEC_TIMEOUT_MS },
     (err, stdout) => {
       fs.unlink(tmp, () => {});
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {
@@ -243,22 +255,31 @@ export function activate(context: vscode.ExtensionContext): void {
       }, delay),
     );
   };
+  // Cancel any pending debounced lints when the extension is disposed, so a
+  // timer cannot fire after deactivation.
+  context.subscriptions.push({
+    dispose: () => {
+      for (const t of debounceTimers.values()) clearTimeout(t);
+      debounceTimers.clear();
+    },
+  });
+
+  // Auto-lint on open/save unless the user opted into manual-only checking.
+  const lintAuto = (doc: vscode.TextDocument) => {
+    if (runMode() === "manual") return;
+    lint(doc, collection, onMissing);
+  };
 
   // Lint currently open + already-visible documents.
   for (const doc of vscode.workspace.textDocuments) {
-    lint(doc, collection, onMissing);
+    lintAuto(doc);
   }
 
   context.subscriptions.push(
-    vscode.workspace.onDidOpenTextDocument((doc) =>
-      lint(doc, collection, onMissing),
-    ),
-    vscode.workspace.onDidSaveTextDocument((doc) =>
-      lint(doc, collection, onMissing),
-    ),
+    vscode.workspace.onDidOpenTextDocument(lintAuto),
+    vscode.workspace.onDidSaveTextDocument(lintAuto),
     vscode.workspace.onDidChangeTextDocument((e) => {
-      const mode = config().get<string>("check.run", "onSave");
-      if (mode !== "onType") return;
+      if (runMode() !== "onType") return;
       const delay = config().get<number>("check.debounce", 400);
       scheduleLint(e.document, Math.max(100, delay));
     }),

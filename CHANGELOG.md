@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `expl3.check.run: manual` now really means manual: opening or saving a file no
+  longer runs explcheck in that mode. Previously only live (as-you-type) checking
+  was suppressed, so open/save still linted despite the setting.
+- A hung or slow `explcheck` run is now bounded by a 30 s timeout, so a dirty
+  buffer's temporary file can no longer leak if the process never returns.
+- Pending debounced checks are cancelled when the extension is deactivated.
+
 ## [0.2.3] - 2026-07-06
 
 ### Added
