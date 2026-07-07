@@ -10,6 +10,12 @@
   commit subjects/bodies.
 - Keep technical names, API names, file paths, and code references untranslated.
 
+## Tooling
+
+- To read GitHub issue/PR state and comments, use the `gh` CLI (e.g.
+  `gh issue view N --repo O/R --comments`/`--json`), not `WebFetch` — GitHub
+  renders comments dynamically and a plain HTML fetch can miss them.
+
 ## Before non-trivial work
 
 - Align with the user before non-trivial plans or edits.

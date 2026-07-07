@@ -31,7 +31,7 @@ Global map of the documentation system. The startup reading order lives in
 ### reference/
 - `reference/configuration.md` — the `expl3.check.*` settings table + arg mapping, the `expl3.check.run` command, supported file types.
 - `reference/scopes.md` — token category → TextMate scope catalog for theme/grammar authors.
-- `reference/release-process.md` — the tag-driven CI + gated release/publish model.
+- `reference/release-process.md` — the tag-driven CI + gated release/publish model, including Open VSX publisher verification.
 
 ### guides/
 - `guides/adding-grammar-tokens.md` — add/adjust a highlighted token, respect match order, add tests, run `npm test`.
@@ -39,8 +39,10 @@ Global map of the documentation system. The startup reading order lives in
 
 ### memory/
 - `memory/doc-gaps.md` — open questions / unverified behavior (recorder-owned).
-- `memory/decisions/` — recorded design decisions (recorder-owned; empty so far).
-- `memory/reflections/` — process lessons (reflector-owned; empty so far).
+- `memory/decisions/` — recorded design decisions (recorder-owned):
+  - `memory/decisions/no-ci-node-pin.md` — why CI leaves `node-version` unpinned.
+  - `memory/decisions/open-vsx-namespace-claim.md` — claiming the `CTeX-org` Open VSX namespace (issue #11645).
+- `memory/reflections/` — process lessons (reflector-owned).
 
 ## Routing rules
 

@@ -67,6 +67,18 @@ enforced by the `release` GitHub Environment.
 Create a GitHub Environment named `release`, add the maintainer as Required
 reviewer, and add `VSCE_PAT` + `OVSX_PAT` as environment secrets.
 
+## Publisher verification (Open VSX)
+
+- The extension is published to Open VSX as an **unverified publisher** until
+  the `CTeX-org` namespace is claimed.
+- Verification is **namespace-level and retroactive**: once the namespace is
+  claimed, existing published versions become verified automatically.
+- Publishing new versions is **not blocked** by an unclaimed namespace, so the
+  release flow above works regardless.
+- Claim namespace ownership via the Open VSX `claim-namespace-ownership` issue
+  form. See `memory/decisions/open-vsx-namespace-claim.md` for the current claim
+  and its status.
+
 ## Prerelease vs release summary
 
 | Tag | GitHub release | Marketplace / Open VSX |
