@@ -2,7 +2,7 @@
   "name": "expl3-vscode",
   "displayName": "expl3 (LaTeX3) Language Support",
   "description": "Syntax highlighting and explcheck diagnostics for expl3 (LaTeX3) code.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "publisher": "CTeX-org",
   "license": "MIT",
   "icon": "images/icon.png",
