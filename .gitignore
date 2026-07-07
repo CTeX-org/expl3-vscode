@@ -145,3 +145,6 @@ vite.config.ts.timestamp-*
 # Extension packaging output
 *.vsix
 images/before-after.svg
+
+# llmdoc temporary investigation scratch cache
+.llmdoc-tmp/
