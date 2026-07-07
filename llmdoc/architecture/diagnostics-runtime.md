@@ -35,17 +35,22 @@ hold:
 
 ## Diagnostics flow: trigger → lint → spawn → parse → show
 
-Triggers registered in `activate`:
+Triggers registered in `activate`. Auto-linting on open/save goes through
+`lintAuto()`, which returns early when `runMode() === "manual"`:
 
-- `onDidOpenTextDocument` → `lint()` immediately.
-- `onDidSaveTextDocument` → `lint()` immediately (the default path; `check.run`
-  defaults to `onSave`).
-- `onDidChangeTextDocument` → acts **only** when `check.run === "onType"`;
+- `onDidOpenTextDocument` → `lintAuto()` (skipped in `manual` mode).
+- `onDidSaveTextDocument` → `lintAuto()` (the default path; `check.run` defaults
+  to `onSave`; skipped in `manual` mode).
+- `onDidChangeTextDocument` → acts **only** when `runMode() === "onType"`;
   otherwise returns early. When `onType`, calls `scheduleLint` with
   `Math.max(100, debounce)` ms.
 - `onDidCloseTextDocument` → `collection.delete(doc.uri)` clears diagnostics.
 - `expl3.check.run` command → lints `activeTextEditor.document` (no-op if no
-  active editor). Bypasses the `check.run` mode but still honors the gate.
+  active editor). Bypasses the `check.run` mode (works even in `manual`) but
+  still honors the lintable-document gate.
+
+The initial eager scan in `activate` also goes through `lintAuto`, so `manual`
+mode does not auto-lint already-open documents on activation.
 
 **Debounce** (`debounceTimers` + `scheduleLint`): a per-document
 `Map<string, NodeJS.Timeout>` keyed by `doc.uri.toString()`. A new change clears
@@ -128,19 +133,19 @@ diagnostics. There is no output channel or status bar.
 
 ## Invariants & edge cases
 
-1. **`check.run: manual` still lints on open and save.** The mode is consulted
-   only in the `onDidChangeTextDocument` (onType) path;
-   `onDidOpenTextDocument`/`onDidSaveTextDocument` call `lint` unconditionally.
-   This contradicts the setting's package.json `enumDescription` ("Only run
-   explcheck via the command"). See `memory/doc-gaps.md` — unverified whether
-   intended.
+1. **`manual` mode is honored on open/save.** `lintAuto` (and the initial scan)
+   returns early when `runMode() === "manual"`, so open/save no longer trigger
+   explcheck in that mode — matching the package.json `enumDescription`. The
+   `expl3.check.run` command still works in `manual` mode.
 2. **onType debounce has a hard floor of 100 ms** (`Math.max(100, delay)`)
    regardless of the configured value (and the `minimum: 100` in the schema).
-3. **Debounce timers are not in `context.subscriptions`** — a pending timer can
-   fire after `deactivate` (which is a no-op). Minor lifecycle leak.
-4. **No `execFile` timeout.** A hung/slow explcheck has no cap besides the 8 MiB
-   `maxBuffer` (which surfaces as an error that is silently swallowed). For dirty
-   buffers a hang means the temp file is never unlinked (leak).
+3. **Debounce timers are cleared on dispose.** A disposable registered in
+   `context.subscriptions` clears all pending `debounceTimers` on deactivation,
+   so no timer fires after the extension is disposed.
+4. **`execFile` runs with a `EXEC_TIMEOUT_MS` (30 s) timeout.** On timeout
+   execFile sends SIGTERM and still fires the callback, so a hung explcheck is
+   bounded and the dirty-buffer temp file is still unlinked in the callback (no
+   leak). A timeout yields no diagnostics for that run.
 5. **Path filtering assumes explcheck echoes exactly the path passed.** If
    explcheck normalized/relativized differently, `path.resolve` comparison could
    drop valid rows.

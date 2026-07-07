@@ -3,25 +3,28 @@
 Open questions and weak spots surfaced during the initial investigation. These
 are documentation/verification gaps, not confirmed bugs — verify before acting.
 
-## Runtime behavior — needs confirmation
+## Runtime behavior
 
-- **`check.run: manual` still lints on open and save.** `src/extension.ts`
-  consults the mode only in the `onDidChangeTextDocument` (onType) path;
-  `onDidOpenTextDocument`/`onDidSaveTextDocument` call `lint` unconditionally.
-  This contradicts the `package.json` `enumDescription` for `manual` ("Only run
-  explcheck via the command"). Is this intended (then fix the description) or a
-  bug (then gate open/save on the mode)? Unresolved.
-- **Debounce timers are not registered in `context.subscriptions`.** A pending
-  onType timer can fire after `deactivate`. Low impact; confirm whether to track
-  and clear them on dispose.
-- **No `execFile` timeout.** A hung/slow `explcheck` has no cap besides the 8 MiB
-  `maxBuffer`, and for dirty buffers a hang leaves the temp file un-unlinked
-  (leak). Confirm whether a timeout / cleanup guard is wanted.
+- **RESOLVED — `check.run: manual` now suppresses open/save linting.**
+  `src/extension.ts` routes open/save (and the initial scan) through `lintAuto`,
+  which returns early when `runMode() === "manual"`. Behavior now matches the
+  `package.json` `enumDescription`. The `expl3.check.run` command still works in
+  `manual` mode.
+- **RESOLVED — debounce timers cleared on dispose.** A disposable registered in
+  `context.subscriptions` clears all pending `debounceTimers` on deactivation.
+- **RESOLVED — `execFile` timeout added.** Both spawns use
+  `timeout: EXEC_TIMEOUT_MS` (30 s). On timeout execFile still fires the callback,
+  so a hung `explcheck` is bounded and the dirty-buffer temp file is still
+  unlinked (no leak).
 
-## CI / packaging — needs confirmation
+## CI / packaging
 
-- **`setup-node@v6` pins no `node-version`** in `ci.yml` / `release.yml`. If a
-  specific Node version matters, pin it rather than relying on the action default.
+- **DECIDED — do not pin `node-version`.** `ci.yml` / `release.yml` intentionally
+  leave `setup-node@v6` unpinned and rely on the runner's current LTS. Pinning a
+  hard number (e.g. `20`) invites EOL churn — Node 20 already emits deprecation
+  warnings in GitHub Actions — and the build (esbuild + tsc + `vsce package` +
+  a `node:`-only test) is version-insensitive. If a specific version ever becomes
+  necessary, prefer `lts/*` over a hard number.
 - **Local build artifacts on disk (not tracked).** The working tree contains a
   `dist/` and a root `expl3-vscode-0.2.1.vsix`, but `git ls-files` confirms
   neither is tracked — `.gitignore` correctly ignores `dist` (line 83) and
