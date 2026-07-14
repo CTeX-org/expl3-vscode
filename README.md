@@ -108,7 +108,11 @@ your .dtx / .sty / .tex file
 ```
 
 TextMate injections are **additive**, so the two layers never fight — the host paints
-the general structure and this extension refines the expl3 tokens.
+the general structure and this extension refines the expl3 tokens. Tokens the host
+already scopes as a `%` comment are left alone (`-comment` in the injection
+selector), so commented-out expl3 code stays comment-colored. In `.dtx` files
+only the leading `%` prefix is a comment token — the code after it still gets
+full expl3 coloring, as DocTeX intends.
 
 ## Supported files
 

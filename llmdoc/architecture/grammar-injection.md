@@ -29,20 +29,41 @@ design. The only self-sufficient case is `.expl` (see base grammar below).
 
 ## Registration: `injectionSelector` vs `injectTo`
 
-Two places declare where the injection attaches, and they intentionally differ:
+Two places declare where the injection attaches:
 
 - **In the grammar file** `syntaxes/expl3.tmLanguage.json`:
   - `scopeName`: `expl3.injection`.
-  - `injectionSelector`: `L:text.tex.latex, L:text.tex.doctex, L:text.tex.latex-expl3`.
-    (`L:` = inject to the left / on top of the host.)
+  - `injectionSelector`: `L:text.tex.latex -comment, L:text.tex.doctex -comment,
+    L:text.tex.latex-expl3 -comment, L:source.expl3 -comment`.
+    (`L:` = inject to the left / on top of the host; `-comment` = skip tokens
+    the host already scopes as a comment.)
 - **In `package.json`** `contributes.grammars[].injectTo`:
-  `text.tex.latex`, `text.tex.doctex`, `text.tex.latex-expl3`, **`source.expl3`**.
+  `text.tex.latex`, `text.tex.doctex`, `text.tex.latex-expl3`, `source.expl3`.
 
-`injectTo` lists one extra scope, **`source.expl3`** — this is what wires the
-injection onto this extension's *own* base grammar, so bare `.expl` files get the
-same expl3 coloring without any other extension. Keep this asymmetry in mind:
-the injection is attached to `source.expl3` only via `package.json`, not via the
-in-grammar `injectionSelector`.
+Both lists must name the same hosts. `injectTo` registers the injection with
+VS Code (which scopes get it at all); the in-grammar `injectionSelector` is the
+matcher vscode-textmate actually evaluates per token position. **A host listed
+only in `injectTo` never matches** — that was the v0.2.4 `.expl` bug:
+`source.expl3` was in `injectTo` but missing from `injectionSelector`, so bare
+`.expl` files silently got no expl3 coloring (fixed in v0.2.5).
+
+### The `-comment` exclusion (issue #1, v0.2.5)
+
+Every selector carries `-comment`, so the injection does not recolor tokens the
+host already scopes as a comment:
+
+- `.tex`/`.sty`/`.cls` (`text.tex.latex`): the host scopes the whole `% ...`
+  line `comment.line.percentage.tex`, so commented-out expl3 code now stays
+  comment-gray (this was issue #1: it used to keep full expl3 colors).
+- `.dtx` (`text.tex.doctex`): the host's comment rule only scopes the leading
+  `%` prefix characters themselves (`comment.line.percentage.doctex`), NOT the
+  rest of the line — a `%` in doctex is the DocStrip prefix, not a comment. So
+  expl3 code after `% ` in `.dtx` keeps its coloring, which is the intended
+  DocTeX behavior. Inside `macrocode` blocks the content is `text.tex.latex`,
+  so a real `%` comment there goes gray as expected.
+- docstrip guards (`%<*driver>` etc.) still highlight in all hosts: the `L:`
+  injection is evaluated before the host's comment rule consumes the line, so
+  at line start the scope list does not yet contain `comment`.
 
 The top-level `patterns` of the injection grammar are just two:
 `#docstrip-guard` and `#expl3-macro`.
