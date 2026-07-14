@@ -2,6 +2,9 @@
 .gitignore
 .vscodeignore
 .github/**
+.claude/**
+llmdoc/**
+.llmdoc-tmp/**
 node_modules/**
 src/**
 tests/**

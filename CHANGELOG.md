@@ -16,6 +16,10 @@
   `injectionSelector`, so vscode-textmate never applied the injection there —
   only the base grammar's generic TeX colors showed. `source.expl3` is now in
   the selector as well.
+- The published `.vsix` no longer ships dev-only files. `.vscodeignore` now
+  excludes `llmdoc/`, `.llmdoc-tmp/`, and `.claude/`, which were previously
+  packaged. The extension shrinks from 47 files (~925 KB) to 11 (~22 KB) — only
+  the grammars, compiled `dist/`, icon, and docs.
 
 ## [0.2.4] - 2026-07-07
 
