@@ -1,0 +1,28 @@
+% MWE for issue #1 — commented-out expl3 code must render as a comment
+% (gray) in .tex/.sty/.cls, while active expl3 code keeps its colors.
+          {
+            \__examzh_question_make_label:n
+              {
+                \__examzh_question_the_label:
+              }
+          }
+        % \__examzh_question_make_label:n
+        %   {
+        %     \bool_if:NT \l__examzh_question_combine_fillin_bool
+        %       {
+        %         % \makebox
+        %           % {
+        %             \tl_if_blank:VTF \l__examzh_question_combine_fillin_args_tl
+        %               { \fillin }
+        %               {
+        %                 \use:x
+        %                   {
+        %                     \exp_not:N \fillin \l__examzh_question_combine_fillin_args_tl
+        %                   }
+        %               }
+        %           % }
+        %       }
+        %     \int_compare:xNnT { \g__examzh_question_index_int } < { 11 }
+        %       { \phantom {1} }
+        %     \__examzh_question_the_label:
+        %   }
