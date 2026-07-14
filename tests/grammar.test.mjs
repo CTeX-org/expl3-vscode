@@ -18,10 +18,29 @@ const oniguruma = onigModule.default ?? onigModule;
 const vsctm = vsctmModule.default ?? vsctmModule;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-// Minimal host grammar: whole line as text, scope name text.tex.doctex.
+// Minimal host grammar mimicking the LaTeX Workshop hosts: a `%` comment rule
+// that scopes the whole comment line (like text.tex.latex), everything else as
+// plain text. The comment rule matters: the injection selector carries
+// `-comment`, so expl3 tokens inside a host comment must NOT be recolored
+// (issue #1), while docstrip guards (`%<...>`) must still win at line start.
 const HOST = {
   scopeName: "text.tex.doctex",
-  patterns: [{ match: ".*", name: "meta.line.tex" }],
+  patterns: [
+    {
+      // Same shape as LaTeX Workshop's #comment rule.
+      begin: "(^[ \\t]+)?(?=%)",
+      end: "(?!\\G)",
+      patterns: [
+        {
+          begin: "%",
+          beginCaptures: { 0: { name: "punctuation.definition.comment.tex" } },
+          end: "$\\n?",
+          name: "comment.line.percentage.tex",
+        },
+      ],
+    },
+    { match: ".*", name: "meta.line.tex" },
+  ],
 };
 
 const wasm = fs.readFileSync(
@@ -87,6 +106,11 @@ const NEGATIVE = [
   ["\\section{Hello}", "expl3"],
   ["plain text line", "expl3"],
   ["% just a comment", "docstrip"],
+  // issue #1: expl3 tokens inside a host % comment must stay comment-colored
+  ["% \\tl_if_blank:VTF \\l__examzh_question_combine_fillin_args_tl", "expl3"],
+  ["        %     \\bool_if:NT \\l__examzh_question_combine_fillin_bool", "expl3"],
+  ["% \\__examzh_question_make_label:n", "expl3"],
+  ["  % \\c_true_bool and \\q_stop in a comment", "expl3"],
 ];
 
 let failures = 0;

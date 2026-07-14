@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "scopeName": "expl3.injection",
-  "injectionSelector": "L:text.tex.latex, L:text.tex.doctex, L:text.tex.latex-expl3",
+  "injectionSelector": "L:text.tex.latex -comment, L:text.tex.doctex -comment, L:text.tex.latex-expl3 -comment, L:source.expl3 -comment",
   "patterns": [
     { "include": "#docstrip-guard" },
     { "include": "#expl3-macro" }

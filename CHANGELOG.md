@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.5] - 2026-07-14
+
+### Fixed
+
+- expl3 tokens inside `%` comments are no longer recolored (issue #1). In
+  `.tex`/`.sty`/`.cls` files, commented-out expl3 code kept its expl3 colors
+  instead of turning comment-gray. The injection selector now carries
+  `-comment`, so the injection skips any scope the host already marks as a
+  comment. `.dtx` doc lines (where the leading `%` is a DocStrip prefix, not a
+  comment for the rest of the line) keep their expl3 highlighting, and docstrip
+  guards like `%<*driver>` still highlight everywhere.
+- Bare `.expl` files now really get expl3 coloring. The `source.expl3` host was
+  listed in `package.json` `injectTo` but missing from the grammar's
+  `injectionSelector`, so vscode-textmate never applied the injection there —
+  only the base grammar's generic TeX colors showed. `source.expl3` is now in
+  the selector as well.
+
 ## [0.2.4] - 2026-07-07
 
 ### Fixed
