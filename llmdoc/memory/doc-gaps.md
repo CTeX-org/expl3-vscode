@@ -10,14 +10,22 @@ removed once captured elsewhere.
   `architecture/diagnostics-runtime.md` + `CHANGELOG.md`.
 - The CI `node-version` pin question is decided — see
   `memory/decisions/no-ci-node-pin.md`.
+- **Grammar host-scope coverage gap (partly resolved, v0.2.5).** The host-scope
+  wiring is now understood and documented: a host must appear in BOTH
+  `package.json` `injectTo` and the grammar `injectionSelector`, or it never
+  matches (this was the `.expl` bug — `source.expl3` was only in `injectTo`).
+  The grammar test's stub host now also carries a comment rule, so the
+  `-comment` behavior is covered. See `architecture/grammar-injection.md`.
 
 ## Open
 
-- **Grammar host-scope coverage gap.** The grammar regression test injects only
-  into the `text.tex.doctex` host scope, so it exercises the injection
-  *patterns* but not every host-scope wiring (`text.tex.latex`,
-  `text.tex.latex-expl3`, `source.expl3`). Consider whether the other host
-  scopes need coverage.
+- **Grammar test still uses one stub host.** `tests/grammar.test.mjs` mounts a
+  single stub under `text.tex.doctex`; it does not tokenize through the real
+  LaTeX Workshop grammars for each host (`text.tex.latex`, `.doctex`,
+  `source.expl3`). The `.dtx`-no-regression and `.sty`-comment checks were done
+  ad hoc against the installed LaTeX Workshop (see the issue-1 scratch report),
+  not in CI. Closure: either vendor minimal host fixtures or add an
+  opt-in test that points at `$LW`.
 - **Local build artifacts on disk (not tracked).** The working tree can contain
   a `dist/` and a root `expl3-vscode-*.vsix`; `git ls-files` confirms neither is
   tracked — `.gitignore` ignores `dist` and `*.vsix`. These are stale local

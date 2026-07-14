@@ -26,7 +26,7 @@ Global map of the documentation system. The startup reading order lives in
 
 ### architecture/
 - `architecture/diagnostics-runtime.md` — the full explcheck flow in `src/extension.ts`: activation, triggers/debounce, dirty-buffer temp files, spawn/args, parsing, severity mapping, clickable codes, and the invariants/edge cases.
-- `architecture/grammar-injection.md` — the injection model, `injectionSelector` vs `injectTo`, the `source.expl3` base grammar, token patterns, match-order invariant, and the v0.2.2 docstrip fix.
+- `architecture/grammar-injection.md` — the injection model, `injectionSelector` vs `injectTo` (both must list the same hosts; the `-comment` exclusion and why `.dtx` is unaffected), the `source.expl3` base grammar, token patterns, match-order invariant, the v0.2.2 docstrip fix, and the v0.2.5 comment/`.expl` fixes.
 
 ### reference/
 - `reference/configuration.md` — the `expl3.check.*` settings table + arg mapping, the `expl3.check.run` command, supported file types.
@@ -42,7 +42,9 @@ Global map of the documentation system. The startup reading order lives in
 - `memory/decisions/` — recorded design decisions (recorder-owned):
   - `memory/decisions/no-ci-node-pin.md` — why CI leaves `node-version` unpinned.
   - `memory/decisions/open-vsx-namespace-claim.md` — claiming the `CTeX-org` Open VSX namespace (issue #11645).
-- `memory/reflections/` — process lessons (reflector-owned).
+- `memory/reflections/` — process lessons (reflector-owned):
+  - `memory/reflections/2026-07-07-init-runtime-fixes-release.md` — init + v0.2.4 runtime fixes; use `gh` not WebFetch; verify doc-gaps with real tooling.
+  - `memory/reflections/2026-07-14-issue-1-comment-highlighting.md` — issue #1 fix; injectTo/selector must match; `-comment` exclusion; Electron/brew node fallback.
 
 ## Routing rules
 

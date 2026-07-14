@@ -44,4 +44,11 @@ scope names: `reference/scopes.md`.
   injection grammar.
 - If you change which host scopes the injection attaches to, update **both**
   `injectionSelector` (in the grammar) and `injectTo` (in `package.json`), and
-  remember `injectTo` intentionally also carries `source.expl3`.
+  remember `injectTo` intentionally also carries `source.expl3`. A host listed
+  only in `injectTo` (not the selector) **fails silently** — VS Code registers
+  the injection but vscode-textmate never matches it there (this was the
+  v0.2.4 `.expl` bug, fixed in v0.2.5).
+- The injection recolors tokens **inside host comments** unless the selector
+  excludes them. Every `injectionSelector` entry carries `-comment` so
+  commented-out expl3 code stays comment-colored (issue #1). Keep `-comment` on
+  any host you add.
