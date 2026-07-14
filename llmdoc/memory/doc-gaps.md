@@ -19,13 +19,11 @@ removed once captured elsewhere.
 
 ## Open
 
-- **Grammar test still uses one stub host.** `tests/grammar.test.mjs` mounts a
-  single stub under `text.tex.doctex`; it does not tokenize through the real
-  LaTeX Workshop grammars for each host (`text.tex.latex`, `.doctex`,
-  `source.expl3`). The `.dtx`-no-regression and `.sty`-comment checks were done
-  ad hoc against the installed LaTeX Workshop (see the issue-1 scratch report),
-  not in CI. Closure: either vendor minimal host fixtures or add an
-  opt-in test that points at `$LW`.
+- **CI does not assert VSIX contents.** The `.vscodeignore` gap that shipped
+  `llmdoc/`/`.claude/` inside the extension (fixed in v0.2.5) was invisible to
+  CI: the package dry-run checks that packaging *succeeds*, not *what* it
+  includes. Closure: add a CI assertion on `vsce ls` (e.g. fail if it lists
+  anything under `llmdoc/`, `.llmdoc-tmp/`, `.claude/`, `src/`, or `tests/`).
 - **Local build artifacts on disk (not tracked).** The working tree can contain
   a `dist/` and a root `expl3-vscode-*.vsix`; `git ls-files` confirms neither is
   tracked — `.gitignore` ignores `dist` and `*.vsix`. These are stale local
